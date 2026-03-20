@@ -24,16 +24,16 @@
       outline: 2px solid #7ee7d8;
       outline-offset: 3px;
     }
+    .back-link { color: rgba(255,255,255,0.4); }
+    .back-link:hover { color: currentColor; }
   </style>
 </head>
 <body>
   <a href="https://davehomeassist.github.io/"
+     class="back-link"
      style="display:inline-flex;align-items:center;gap:.35rem;position:fixed;
             top:.65rem;left:.85rem;z-index:100;font-size:.7rem;
-            letter-spacing:.04em;color:rgba(255,255,255,0.4);
-            text-decoration:none;transition:color .15s;"
-     onmouseover="this.style.color='currentColor'"
-     onmouseout="this.style.color='rgba(255,255,255,0.4)'">&larr; DaveHomeAssist</a>
+            letter-spacing:.04em;text-decoration:none;transition:color .15s;">&larr; DaveHomeAssist</a>
   <div id="loading"><div id="loading-spinner"></div><div id="loading-text">Loading...</div></div>
   <div id="root"></div>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
