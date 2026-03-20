@@ -16,14 +16,15 @@
       position: absolute;
       left: -9999px;
       top: auto;
-      z-index: 1000;
       padding: 8px 16px;
+      z-index: 10000;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 14px;
       background: #0A0A0B;
       color: #7ee7d8;
-      border-radius: 4px;
-      text-decoration: none;
     }
-    .skip-link:focus { left: 10px; top: 10px; }
+    .skip-link:focus { left: 10px; top: 10px; outline: 2px solid currentColor; }
     .fallback-header,
     .fallback-main {
       max-width: 880px;
@@ -79,7 +80,27 @@
   </header>
   <main class="fallback-main">
     <div id="loading"><div id="loading-spinner"></div><div id="loading-text">Loading...</div></div>
-    <div id="root"><noscript><p class="fallback-copy">JavaScript is required to load the full experience. You can still return to the portfolio using the navigation above.</p></noscript></div>
+    <div id="root">
+      <noscript>
+        <div style="padding:2rem 0;line-height:1.7;">
+          <h2 style="font-size:1.4rem;margin-bottom:.5rem;color:#7ee7d8;">Professional Websites in 48 Hours</h2>
+          <p class="fallback-copy" style="margin-bottom:1rem;">Rapid Sites builds fast, beautiful, mobile-ready websites for restaurants, contractors, law firms, and small businesses. Fixed pricing, no surprises — serving Philadelphia &amp; South Jersey.</p>
+          <h3 style="font-size:1.1rem;margin-bottom:.4rem;">Packages</h3>
+          <ul style="list-style:disc;padding-left:1.5rem;color:rgba(255,255,255,0.74);margin-bottom:1rem;">
+            <li>Starter — $750 flat, 48-hour delivery</li>
+            <li>Professional — $1,500 flat, 3-5 day delivery (most popular)</li>
+            <li>Premium — $2,500 flat, 5-7 day delivery</li>
+          </ul>
+          <h3 style="font-size:1.1rem;margin-bottom:.4rem;">Get Started</h3>
+          <p class="fallback-copy">
+            Email: <a href="mailto:hello@rapidsites.dev" style="color:#7ee7d8;">hello@rapidsites.dev</a><br>
+            Phone: <a href="tel:+12676653324" style="color:#7ee7d8;">(267) 665-3324</a><br>
+            Free 15-minute consultation — no pressure, no commitment.
+          </p>
+          <p style="color:rgba(255,255,255,0.4);font-size:.85rem;margin-top:1rem;">Enable JavaScript for the full interactive experience including portfolio, pricing details, and contact form.</p>
+        </div>
+      </noscript>
+    </div>
   </main>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
