@@ -11,7 +11,42 @@
     <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/favicon/apple-touch-icon.png" />
 <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, sans-serif; }
+    body { font-family: system-ui, sans-serif; background: #0A0A0B; color: #f4f7fb; }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      z-index: 1000;
+      padding: 8px 16px;
+      background: #0A0A0B;
+      color: #7ee7d8;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+    .skip-link:focus { left: 10px; top: 10px; }
+    .fallback-header,
+    .fallback-main {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .fallback-header {
+      display: grid;
+      gap: 10px;
+      margin-top: 3rem;
+    }
+    .fallback-header h1 {
+      font-size: clamp(1.9rem, 4vw, 2.6rem);
+      line-height: 1.05;
+    }
+    .fallback-header nav a {
+      color: #7ee7d8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .fallback-header nav a:hover,
+    .fallback-header nav a:focus-visible { text-decoration: underline; }
+    .fallback-copy { color: rgba(255,255,255,0.74); line-height: 1.6; }
     #loading { position: fixed; inset: 0; z-index: 9999; background: #0A0A0B;
       display: flex; align-items: center; justify-content: center; flex-direction: column;
       transition: opacity 0.4s ease; }
@@ -29,13 +64,23 @@
   </style>
 </head>
 <body>
+  <a href="#root" class="skip-link">Skip to content</a>
   <a href="https://davehomeassist.github.io/"
      class="back-link"
      style="display:inline-flex;align-items:center;gap:.35rem;position:fixed;
             top:.65rem;left:.85rem;z-index:100;font-size:.7rem;
             letter-spacing:.04em;text-decoration:none;transition:color .15s;">&larr; DaveHomeAssist</a>
-  <div id="loading"><div id="loading-spinner"></div><div id="loading-text">Loading...</div></div>
-  <div id="root"></div>
+  <header class="fallback-header">
+    <h1>Rapid Sites — Professional Websites in 48 Hours</h1>
+    <nav aria-label="Primary navigation">
+      <a href="https://davehomeassist.github.io/">Back to DaveHomeAssist</a>
+    </nav>
+    <p class="fallback-copy">Rapid Sites is a fast-turnaround site offer for local businesses that need a clean launch surface without a long dev cycle.</p>
+  </header>
+  <main class="fallback-main">
+    <div id="loading"><div id="loading-spinner"></div><div id="loading-text">Loading...</div></div>
+    <div id="root"><noscript><p class="fallback-copy">JavaScript is required to load the full experience. You can still return to the portfolio using the navigation above.</p></noscript></div>
+  </main>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="/app.js"></script>
