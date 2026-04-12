@@ -513,80 +513,156 @@ function FAQ() {
     className: "faq-a"
   }, f.a))));
 }
+// ── Formspree endpoint — replace YOUR_FORM_ID after creating a free form at
+// https://formspree.io/ (sign up, click "+ New Form", copy the form ID shown).
+var FORMSPREE_URL = "https://formspree.io/f/YOUR_FORM_ID";
+
 function ContactForm() {
-  const [sent, setSent] = useState(false);
-  if (sent) return /*#__PURE__*/React.createElement("div", {
+  var [fields, setFields] = useState({ name: "", email: "", phone: "", business: "", message: "", _honey: "" });
+  var [errors, setErrors] = useState({});
+  var [status, setStatus] = useState("idle"); // idle | submitting | success | error
+
+  function update(e) {
+    var key = e.target.name;
+    var val = e.target.value;
+    setFields(function(prev) { return Object.assign({}, prev, { [key]: val }); });
+    if (errors[key]) setErrors(function(prev) { var next = Object.assign({}, prev); delete next[key]; return next; });
+  }
+
+  function validate() {
+    var errs = {};
+    if (!fields.name.trim()) errs.name = "Name is required.";
+    if (!fields.email.trim()) {
+      errs.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email.trim())) {
+      errs.email = "Please enter a valid email.";
+    }
+    return errs;
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    // Honeypot — silently drop if filled by a bot
+    if (fields._honey) return;
+    var errs = validate();
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    setStatus("submitting");
+    var body = {
+      name: fields.name.trim(),
+      email: fields.email.trim(),
+      phone: fields.phone.trim(),
+      business: fields.business,
+      message: fields.message.trim(),
+    };
+    fetch(FORMSPREE_URL, {
+      method: "POST",
+      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+      .then(function(res) {
+        if (res.ok) { setStatus("success"); }
+        else { return res.json().then(function(data) { throw new Error((data && data.error) || "Server error"); }); }
+      })
+      .catch(function() { setStatus("error"); });
+  }
+
+  if (status === "success") {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "form-card",
+      style: { textAlign: "center", padding: 48 }
+    },
+      /*#__PURE__*/React.createElement("div", { style: { fontSize: 48, marginBottom: 16 } }, "\u2713"),
+      /*#__PURE__*/React.createElement("h3", { style: { fontFamily: "var(--font-display)", fontSize: 24, color: "var(--text)", marginBottom: 8 } }, "Message Sent"),
+      /*#__PURE__*/React.createElement("p", { style: { color: "var(--text-secondary)", fontSize: 14 } }, "I'll get back to you within a few hours.")
+    );
+  }
+
+  var isSubmitting = status === "submitting";
+
+  return /*#__PURE__*/React.createElement("form", {
     className: "form-card",
-    style: {
-      textAlign: "center",
-      padding: 48
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 48,
-      marginBottom: 16
-    }
-  }, "\u2713"), /*#__PURE__*/React.createElement("h3", {
-    style: {
-      fontFamily: "var(--font-display)",
-      fontSize: 24,
-      color: "var(--text)",
-      marginBottom: 8
-    }
-  }, "Message Sent"), /*#__PURE__*/React.createElement("p", {
-    style: {
-      color: "var(--text-secondary)",
-      fontSize: 14
-    }
-  }, "I'll get back to you within a few hours."));
-  return /*#__PURE__*/React.createElement("div", {
-    className: "form-card"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "form-field"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Your Name"), /*#__PURE__*/React.createElement("input", {
-    className: "form-input",
-    placeholder: "Jane Smith"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "form-row"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "form-field"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Email"), /*#__PURE__*/React.createElement("input", {
-    className: "form-input",
-    type: "email",
-    placeholder: "jane@business.com"
-  })), /*#__PURE__*/React.createElement("div", {
-    className: "form-field"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Phone"), /*#__PURE__*/React.createElement("input", {
-    className: "form-input",
-    type: "tel",
-    placeholder: "(555) 000-0000"
-  }))), /*#__PURE__*/React.createElement("div", {
-    className: "form-field"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Business Type"), /*#__PURE__*/React.createElement("select", {
-    className: "form-select",
-    defaultValue: ""
-  }, /*#__PURE__*/React.createElement("option", {
-    value: "",
-    disabled: true
-  }, "Select your industry\u2026"), /*#__PURE__*/React.createElement("option", null, "Restaurant / Food Service"), /*#__PURE__*/React.createElement("option", null, "Contractor / Home Services"), /*#__PURE__*/React.createElement("option", null, "Law Firm / Legal"), /*#__PURE__*/React.createElement("option", null, "Real Estate"), /*#__PURE__*/React.createElement("option", null, "Salon / Beauty"), /*#__PURE__*/React.createElement("option", null, "Healthcare / Dental"), /*#__PURE__*/React.createElement("option", null, "Other"))), /*#__PURE__*/React.createElement("div", {
-    className: "form-field"
-  }, /*#__PURE__*/React.createElement("label", {
-    className: "form-label"
-  }, "Tell me about your project"), /*#__PURE__*/React.createElement("textarea", {
-    className: "form-textarea",
-    placeholder: "Do you have an existing site? What are your goals? Any specific features you need?"
-  })), /*#__PURE__*/React.createElement("button", {
-    className: "form-submit",
-    onClick: () => setSent(true)
-  }, "Send Message"));
+    onSubmit: handleSubmit,
+    noValidate: true
+  },
+    // Honeypot — hidden from real users, lures bots
+    /*#__PURE__*/React.createElement("input", {
+      type: "text",
+      name: "_honey",
+      value: fields._honey,
+      onChange: update,
+      style: { display: "none" },
+      tabIndex: -1,
+      autoComplete: "off"
+    }),
+    // Name
+    /*#__PURE__*/React.createElement("div", { className: "form-field" },
+      /*#__PURE__*/React.createElement("label", { className: "form-label", htmlFor: "cf-name" }, "Your Name *"),
+      /*#__PURE__*/React.createElement("input", {
+        id: "cf-name", name: "name", className: "form-input",
+        placeholder: "Jane Smith", value: fields.name, onChange: update,
+        "aria-required": "true", "aria-invalid": !!errors.name,
+        style: errors.name ? { borderColor: "#f87171" } : undefined
+      }),
+      errors.name && /*#__PURE__*/React.createElement("p", { style: { color: "#f87171", fontSize: 12, marginTop: 4 } }, errors.name)
+    ),
+    // Email + Phone row
+    /*#__PURE__*/React.createElement("div", { className: "form-row" },
+      /*#__PURE__*/React.createElement("div", { className: "form-field" },
+        /*#__PURE__*/React.createElement("label", { className: "form-label", htmlFor: "cf-email" }, "Email *"),
+        /*#__PURE__*/React.createElement("input", {
+          id: "cf-email", name: "email", type: "email", className: "form-input",
+          placeholder: "jane@business.com", value: fields.email, onChange: update,
+          "aria-required": "true", "aria-invalid": !!errors.email,
+          style: errors.email ? { borderColor: "#f87171" } : undefined
+        }),
+        errors.email && /*#__PURE__*/React.createElement("p", { style: { color: "#f87171", fontSize: 12, marginTop: 4 } }, errors.email)
+      ),
+      /*#__PURE__*/React.createElement("div", { className: "form-field" },
+        /*#__PURE__*/React.createElement("label", { className: "form-label", htmlFor: "cf-phone" }, "Phone"),
+        /*#__PURE__*/React.createElement("input", {
+          id: "cf-phone", name: "phone", type: "tel", className: "form-input",
+          placeholder: "(555) 000-0000", value: fields.phone, onChange: update
+        })
+      )
+    ),
+    // Business Type
+    /*#__PURE__*/React.createElement("div", { className: "form-field" },
+      /*#__PURE__*/React.createElement("label", { className: "form-label", htmlFor: "cf-business" }, "Business Type"),
+      /*#__PURE__*/React.createElement("select", {
+        id: "cf-business", name: "business", className: "form-select",
+        value: fields.business, onChange: update
+      },
+        /*#__PURE__*/React.createElement("option", { value: "" }, "Select your industry\u2026"),
+        /*#__PURE__*/React.createElement("option", null, "Restaurant / Food Service"),
+        /*#__PURE__*/React.createElement("option", null, "Contractor / Home Services"),
+        /*#__PURE__*/React.createElement("option", null, "Law Firm / Legal"),
+        /*#__PURE__*/React.createElement("option", null, "Real Estate"),
+        /*#__PURE__*/React.createElement("option", null, "Salon / Beauty"),
+        /*#__PURE__*/React.createElement("option", null, "Healthcare / Dental"),
+        /*#__PURE__*/React.createElement("option", null, "Other")
+      )
+    ),
+    // Message
+    /*#__PURE__*/React.createElement("div", { className: "form-field" },
+      /*#__PURE__*/React.createElement("label", { className: "form-label", htmlFor: "cf-message" }, "Tell me about your project"),
+      /*#__PURE__*/React.createElement("textarea", {
+        id: "cf-message", name: "message", className: "form-textarea",
+        placeholder: "Do you have an existing site? What are your goals? Any specific features you need?",
+        value: fields.message, onChange: update
+      })
+    ),
+    // Error banner
+    status === "error" && /*#__PURE__*/React.createElement("p", {
+      style: { color: "#f87171", fontSize: 13, marginBottom: 12, textAlign: "center" }
+    }, "Something went wrong. Please try again or email directly at daverobertson9353@gmail.com."),
+    // Submit
+    /*#__PURE__*/React.createElement("button", {
+      type: "submit",
+      className: "form-submit",
+      disabled: isSubmitting,
+      style: isSubmitting ? { opacity: 0.6, cursor: "not-allowed" } : undefined
+    }, isSubmitting ? "Sending\u2026" : "Send Message")
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════
