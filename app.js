@@ -513,9 +513,10 @@ function FAQ() {
     className: "faq-a"
   }, f.a))));
 }
-// ── Formspree endpoint — replace YOUR_FORM_ID after creating a free form at
-// https://formspree.io/ (sign up, click "+ New Form", copy the form ID shown).
-var FORMSPREE_URL = "https://formspree.io/f/YOUR_FORM_ID";
+// ── Contact form → Notion database via Vercel serverless proxy
+// Deploy this repo to Vercel and set NOTION_API_KEY env var.
+// Submissions land in: DB | Freelance Contact Submissions (Notion)
+var CONTACT_API_URL = "https://freelance-mu-five.vercel.app/api/contact";
 
 function ContactForm() {
   var [fields, setFields] = useState({ name: "", email: "", phone: "", business: "", message: "", _honey: "" });
@@ -554,9 +555,9 @@ function ContactForm() {
       business: fields.business,
       message: fields.message.trim(),
     };
-    fetch(FORMSPREE_URL, {
+    fetch(CONTACT_API_URL, {
       method: "POST",
-      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     })
       .then(function(res) {
