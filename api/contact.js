@@ -4,9 +4,18 @@
 
 const NOTION_DB_ID = "d7472c75-9e65-43b7-a06f-fd4926729ce1";
 
+const ALLOWED_ORIGINS = [
+  "https://davehomeassist.github.io",
+  "https://freelance-mu-five.vercel.app",
+  "http://localhost:8000",
+  "http://127.0.0.1:8000",
+];
+
 export default async function handler(req, res) {
-  // CORS — allow the GitHub Pages origin
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  const origin = req.headers.origin || "";
+  const allowOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  res.setHeader("Access-Control-Allow-Origin", allowOrigin);
+  res.setHeader("Vary", "Origin");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
