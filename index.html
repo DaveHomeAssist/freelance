@@ -115,7 +115,7 @@
   <script defer src="app.js"></script>
   <script>
     const el = document.getElementById('loading');
-    const check = () => { if (document.getElementById('root').children.length > 0) { el.classList.add('hide'); setTimeout(() => el.remove(), 500); } else { requestAnimationFrame(check); } };
+    const check = () => { if (document.getElementById('root').children.length > 0) { document.querySelector('.fallback-header')?.remove(); el.classList.add('hide'); setTimeout(() => el.remove(), 500); } else { requestAnimationFrame(check); } };
     requestAnimationFrame(check);
     setTimeout(() => { el.classList.add('hide'); }, 3000);
   </script>
