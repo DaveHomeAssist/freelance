@@ -10,6 +10,41 @@ const ALLOWED_ORIGINS = [
   "http://localhost:8000",
   "http://127.0.0.1:8000",
 ];
+const MAX_MESSAGE_LENGTH = 5000;
+
+function clean(value, maxLength) {
+  return String(value || "").trim().slice(0, maxLength);
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+export function validatePayload(payload) {
+  const errors = [];
+  const name = clean(payload.name, 200);
+  const email = clean(payload.email, 200);
+  const message = clean(payload.message, MAX_MESSAGE_LENGTH + 1);
+
+  if (name.length < 2) errors.push("name");
+  if (!email) errors.push("email");
+  else if (!isValidEmail(email)) errors.push("email");
+  if (message.length > MAX_MESSAGE_LENGTH) errors.push("message_too_long");
+
+  return errors;
+}
+
+export function buildProperties(payload) {
+  return {
+    Name: { title: [{ text: { content: clean(payload.name, 200) } }] },
+    Email: { email: clean(payload.email, 200) },
+    Phone: { phone_number: clean(payload.phone, 50) || null },
+    Business: { rich_text: clean(payload.business, 200) ? [{ text: { content: clean(payload.business, 200) } }] : [] },
+    Message: { rich_text: clean(payload.message, MAX_MESSAGE_LENGTH) ? [{ text: { content: clean(payload.message, MAX_MESSAGE_LENGTH) } }] : [] },
+    Status: { select: { name: "New" } },
+    Source: { select: { name: "Freelance Site" } },
+  };
+}
 
 export default async function handler(req, res) {
   const origin = req.headers.origin || "";
@@ -25,10 +60,22 @@ export default async function handler(req, res) {
   const token = process.env.NOTION_API_KEY;
   if (!token) return res.status(500).json({ error: "Server misconfigured" });
 
-  const { name, email, phone, business, message } = req.body || {};
+  let payload = req.body || {};
+  if (typeof payload === "string") {
+    try {
+      payload = JSON.parse(payload);
+    } catch {
+      return res.status(400).json({ error: "Invalid request body" });
+    }
+  }
 
-  if (!name || !email) {
-    return res.status(400).json({ error: "Name and email are required." });
+  if (payload._honey || payload.website) {
+    return res.status(200).json({ ok: true });
+  }
+
+  const errors = validatePayload(payload);
+  if (errors.length) {
+    return res.status(400).json({ error: "Validation failed.", fields: errors });
   }
 
   try {
@@ -41,15 +88,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         parent: { database_id: NOTION_DB_ID },
-        properties: {
-          Name: { title: [{ text: { content: name } }] },
-          Email: { email: email },
-          Phone: { phone_number: phone || null },
-          Business: { rich_text: business ? [{ text: { content: business } }] : [] },
-          Message: { rich_text: message ? [{ text: { content: message } }] : [] },
-          Status: { select: { name: "New" } },
-          Source: { select: { name: "Freelance Site" } },
-        },
+        properties: buildProperties(payload),
       }),
     });
 
